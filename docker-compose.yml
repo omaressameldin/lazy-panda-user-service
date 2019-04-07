@@ -1,5 +1,15 @@
 version: '3.2'
 services:
+  lazy-panda-proto-gen:
+    build: ./proto-gen/.
+    environment:
+      - BUILD_PATH=${PROTO_BUILD_PATH}
+      - OUTPUT_PATH=${PROTO_OUTPUT_PATH}
+      - FILENAME=${PROTO_FILENAME}
+    volumes:
+      - type: bind
+        target: ${PROTO_OUTPUT_PATH}
+        source: ./app${PROTO_OUTPUT_PATH}
   lazy-panda-user-server:
     build: .
     command: /user-server --port=7500
