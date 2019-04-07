@@ -1,0 +1,7 @@
+version: '3.2'
+services:
+  lazy-panda-user-server:
+    build: .
+    command: /user-server --port=7500
+    ports:
+      - "7500:7500"
