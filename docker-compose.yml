@@ -11,7 +11,17 @@ services:
         target: ${PROTO_OUTPUT_PATH}
         source: ./app${PROTO_OUTPUT_PATH}
   lazy-panda-user-server:
-    build: .
-    command: /user-server --port=7500
+    build:
+      context: .
+      args:
+        - FIREBASE_CONFIG=${FIREBASE_CONFIG}
+        - APP_SRC=${APP_SRC}
+        - MODS=${MODS}
+        - BUILD_FILE=${BUILD_FILE}
+    command: sh -c "cp -r ${MODS}/. ${APP_SRC} && /${BUILD_FILE} --port=${PORT} --firebaseConfig=${FIREBASE_CONFIG} --collection=${COLLECTION}"
+    volumes:
+      - type: bind
+        target: ${APP_SRC}
+        source: ./app
     ports:
-      - "7500:7500"
+      - "${PORT}:${PORT}"
