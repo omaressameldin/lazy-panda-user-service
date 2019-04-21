@@ -8,6 +8,7 @@ import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
 	timestamp "github.com/golang/protobuf/ptypes/timestamp"
+	wrappers "github.com/golang/protobuf/ptypes/wrappers"
 	grpc "google.golang.org/grpc"
 	math "math"
 )
@@ -24,13 +25,11 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type User struct {
-	AuthId   int64  `protobuf:"varint,1,opt,name=auth_id,json=authId,proto3" json:"auth_id,omitempty"`
-	Email    string `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
-	Fullname string `protobuf:"bytes,3,opt,name=fullname,proto3" json:"fullname,omitempty"`
-	Nickname string `protobuf:"bytes,4,opt,name=nickname,proto3" json:"nickname,omitempty"`
-	// Types that are valid to be assigned to Picture:
-	//	*User_PictureValue
-	Picture              isUser_Picture       `protobuf_oneof:"picture"`
+	AuthId               string               `protobuf:"bytes,1,opt,name=auth_id,json=authId,proto3" json:"auth_id,omitempty"`
+	Email                string               `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
+	Fullname             string               `protobuf:"bytes,3,opt,name=fullname,proto3" json:"fullname,omitempty"`
+	Nickname             string               `protobuf:"bytes,4,opt,name=nickname,proto3" json:"nickname,omitempty"`
+	Picture              string               `protobuf:"bytes,5,opt,name=picture,proto3" json:"picture,omitempty"`
 	CreatedAt            *timestamp.Timestamp `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt            *timestamp.Timestamp `protobuf:"bytes,7,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
@@ -63,11 +62,11 @@ func (m *User) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_User proto.InternalMessageInfo
 
-func (m *User) GetAuthId() int64 {
+func (m *User) GetAuthId() string {
 	if m != nil {
 		return m.AuthId
 	}
-	return 0
+	return ""
 }
 
 func (m *User) GetEmail() string {
@@ -91,26 +90,9 @@ func (m *User) GetNickname() string {
 	return ""
 }
 
-type isUser_Picture interface {
-	isUser_Picture()
-}
-
-type User_PictureValue struct {
-	PictureValue string `protobuf:"bytes,5,opt,name=picture_value,json=pictureValue,proto3,oneof"`
-}
-
-func (*User_PictureValue) isUser_Picture() {}
-
-func (m *User) GetPicture() isUser_Picture {
+func (m *User) GetPicture() string {
 	if m != nil {
 		return m.Picture
-	}
-	return nil
-}
-
-func (m *User) GetPictureValue() string {
-	if x, ok := m.GetPicture().(*User_PictureValue); ok {
-		return x.PictureValue
 	}
 	return ""
 }
@@ -129,55 +111,75 @@ func (m *User) GetUpdatedAt() *timestamp.Timestamp {
 	return nil
 }
 
-// XXX_OneofFuncs is for the internal use of the proto package.
-func (*User) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
-	return _User_OneofMarshaler, _User_OneofUnmarshaler, _User_OneofSizer, []interface{}{
-		(*User_PictureValue)(nil),
-	}
+type UserUpdate struct {
+	Email                *wrappers.StringValue `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+	Fullname             *wrappers.StringValue `protobuf:"bytes,2,opt,name=fullname,proto3" json:"fullname,omitempty"`
+	Nickname             *wrappers.StringValue `protobuf:"bytes,3,opt,name=nickname,proto3" json:"nickname,omitempty"`
+	Picture              *wrappers.StringValue `protobuf:"bytes,4,opt,name=picture,proto3" json:"picture,omitempty"`
+	UpdatedAt            *timestamp.Timestamp  `protobuf:"bytes,7,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
+	XXX_unrecognized     []byte                `json:"-"`
+	XXX_sizecache        int32                 `json:"-"`
 }
 
-func _User_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
-	m := msg.(*User)
-	// picture
-	switch x := m.Picture.(type) {
-	case *User_PictureValue:
-		b.EncodeVarint(5<<3 | proto.WireBytes)
-		b.EncodeStringBytes(x.PictureValue)
-	case nil:
-	default:
-		return fmt.Errorf("User.Picture has unexpected type %T", x)
+func (m *UserUpdate) Reset()         { *m = UserUpdate{} }
+func (m *UserUpdate) String() string { return proto.CompactTextString(m) }
+func (*UserUpdate) ProtoMessage()    {}
+func (*UserUpdate) Descriptor() ([]byte, []int) {
+	return fileDescriptor_116e343673f7ffaf, []int{1}
+}
+
+func (m *UserUpdate) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UserUpdate.Unmarshal(m, b)
+}
+func (m *UserUpdate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UserUpdate.Marshal(b, m, deterministic)
+}
+func (m *UserUpdate) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UserUpdate.Merge(m, src)
+}
+func (m *UserUpdate) XXX_Size() int {
+	return xxx_messageInfo_UserUpdate.Size(m)
+}
+func (m *UserUpdate) XXX_DiscardUnknown() {
+	xxx_messageInfo_UserUpdate.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UserUpdate proto.InternalMessageInfo
+
+func (m *UserUpdate) GetEmail() *wrappers.StringValue {
+	if m != nil {
+		return m.Email
 	}
 	return nil
 }
 
-func _User_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
-	m := msg.(*User)
-	switch tag {
-	case 5: // picture.picture_value
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		x, err := b.DecodeStringBytes()
-		m.Picture = &User_PictureValue{x}
-		return true, err
-	default:
-		return false, nil
+func (m *UserUpdate) GetFullname() *wrappers.StringValue {
+	if m != nil {
+		return m.Fullname
 	}
+	return nil
 }
 
-func _User_OneofSizer(msg proto.Message) (n int) {
-	m := msg.(*User)
-	// picture
-	switch x := m.Picture.(type) {
-	case *User_PictureValue:
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(len(x.PictureValue)))
-		n += len(x.PictureValue)
-	case nil:
-	default:
-		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
+func (m *UserUpdate) GetNickname() *wrappers.StringValue {
+	if m != nil {
+		return m.Nickname
 	}
-	return n
+	return nil
+}
+
+func (m *UserUpdate) GetPicture() *wrappers.StringValue {
+	if m != nil {
+		return m.Picture
+	}
+	return nil
+}
+
+func (m *UserUpdate) GetUpdatedAt() *timestamp.Timestamp {
+	if m != nil {
+		return m.UpdatedAt
+	}
+	return nil
 }
 
 type CreateRequest struct {
@@ -192,7 +194,7 @@ func (m *CreateRequest) Reset()         { *m = CreateRequest{} }
 func (m *CreateRequest) String() string { return proto.CompactTextString(m) }
 func (*CreateRequest) ProtoMessage()    {}
 func (*CreateRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_116e343673f7ffaf, []int{1}
+	return fileDescriptor_116e343673f7ffaf, []int{2}
 }
 
 func (m *CreateRequest) XXX_Unmarshal(b []byte) error {
@@ -229,7 +231,6 @@ func (m *CreateRequest) GetUser() *User {
 
 type CreateResponse struct {
 	Api                  string   `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
-	User                 *User    `protobuf:"bytes,2,opt,name=user,proto3" json:"user,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -239,7 +240,7 @@ func (m *CreateResponse) Reset()         { *m = CreateResponse{} }
 func (m *CreateResponse) String() string { return proto.CompactTextString(m) }
 func (*CreateResponse) ProtoMessage()    {}
 func (*CreateResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_116e343673f7ffaf, []int{2}
+	return fileDescriptor_116e343673f7ffaf, []int{3}
 }
 
 func (m *CreateResponse) XXX_Unmarshal(b []byte) error {
@@ -267,16 +268,9 @@ func (m *CreateResponse) GetApi() string {
 	return ""
 }
 
-func (m *CreateResponse) GetUser() *User {
-	if m != nil {
-		return m.User
-	}
-	return nil
-}
-
 type ReadRequest struct {
 	Api                  string   `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
-	AuthId               int64    `protobuf:"varint,2,opt,name=auth_id,json=authId,proto3" json:"auth_id,omitempty"`
+	AuthId               string   `protobuf:"bytes,2,opt,name=auth_id,json=authId,proto3" json:"auth_id,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -286,7 +280,7 @@ func (m *ReadRequest) Reset()         { *m = ReadRequest{} }
 func (m *ReadRequest) String() string { return proto.CompactTextString(m) }
 func (*ReadRequest) ProtoMessage()    {}
 func (*ReadRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_116e343673f7ffaf, []int{3}
+	return fileDescriptor_116e343673f7ffaf, []int{4}
 }
 
 func (m *ReadRequest) XXX_Unmarshal(b []byte) error {
@@ -314,11 +308,11 @@ func (m *ReadRequest) GetApi() string {
 	return ""
 }
 
-func (m *ReadRequest) GetAuthId() int64 {
+func (m *ReadRequest) GetAuthId() string {
 	if m != nil {
 		return m.AuthId
 	}
-	return 0
+	return ""
 }
 
 type ReadResponse struct {
@@ -333,7 +327,7 @@ func (m *ReadResponse) Reset()         { *m = ReadResponse{} }
 func (m *ReadResponse) String() string { return proto.CompactTextString(m) }
 func (*ReadResponse) ProtoMessage()    {}
 func (*ReadResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_116e343673f7ffaf, []int{4}
+	return fileDescriptor_116e343673f7ffaf, []int{5}
 }
 
 func (m *ReadResponse) XXX_Unmarshal(b []byte) error {
@@ -369,18 +363,19 @@ func (m *ReadResponse) GetUser() *User {
 }
 
 type UpdateRequest struct {
-	Api                  string   `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
-	User                 *User    `protobuf:"bytes,2,opt,name=user,proto3" json:"user,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	Api                  string      `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
+	AuthId               string      `protobuf:"bytes,2,opt,name=auth_id,json=authId,proto3" json:"auth_id,omitempty"`
+	User                 *UserUpdate `protobuf:"bytes,3,opt,name=user,proto3" json:"user,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
+	XXX_unrecognized     []byte      `json:"-"`
+	XXX_sizecache        int32       `json:"-"`
 }
 
 func (m *UpdateRequest) Reset()         { *m = UpdateRequest{} }
 func (m *UpdateRequest) String() string { return proto.CompactTextString(m) }
 func (*UpdateRequest) ProtoMessage()    {}
 func (*UpdateRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_116e343673f7ffaf, []int{5}
+	return fileDescriptor_116e343673f7ffaf, []int{6}
 }
 
 func (m *UpdateRequest) XXX_Unmarshal(b []byte) error {
@@ -408,7 +403,14 @@ func (m *UpdateRequest) GetApi() string {
 	return ""
 }
 
-func (m *UpdateRequest) GetUser() *User {
+func (m *UpdateRequest) GetAuthId() string {
+	if m != nil {
+		return m.AuthId
+	}
+	return ""
+}
+
+func (m *UpdateRequest) GetUser() *UserUpdate {
 	if m != nil {
 		return m.User
 	}
@@ -417,7 +419,6 @@ func (m *UpdateRequest) GetUser() *User {
 
 type UpdateResponse struct {
 	Api                  string   `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
-	User                 *User    `protobuf:"bytes,2,opt,name=user,proto3" json:"user,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -427,7 +428,7 @@ func (m *UpdateResponse) Reset()         { *m = UpdateResponse{} }
 func (m *UpdateResponse) String() string { return proto.CompactTextString(m) }
 func (*UpdateResponse) ProtoMessage()    {}
 func (*UpdateResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_116e343673f7ffaf, []int{6}
+	return fileDescriptor_116e343673f7ffaf, []int{7}
 }
 
 func (m *UpdateResponse) XXX_Unmarshal(b []byte) error {
@@ -455,16 +456,9 @@ func (m *UpdateResponse) GetApi() string {
 	return ""
 }
 
-func (m *UpdateResponse) GetUser() *User {
-	if m != nil {
-		return m.User
-	}
-	return nil
-}
-
 type DeleteRequest struct {
 	Api                  string   `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
-	AuthId               int64    `protobuf:"varint,2,opt,name=auth_id,json=authId,proto3" json:"auth_id,omitempty"`
+	AuthId               string   `protobuf:"bytes,2,opt,name=auth_id,json=authId,proto3" json:"auth_id,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -474,7 +468,7 @@ func (m *DeleteRequest) Reset()         { *m = DeleteRequest{} }
 func (m *DeleteRequest) String() string { return proto.CompactTextString(m) }
 func (*DeleteRequest) ProtoMessage()    {}
 func (*DeleteRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_116e343673f7ffaf, []int{7}
+	return fileDescriptor_116e343673f7ffaf, []int{8}
 }
 
 func (m *DeleteRequest) XXX_Unmarshal(b []byte) error {
@@ -502,16 +496,15 @@ func (m *DeleteRequest) GetApi() string {
 	return ""
 }
 
-func (m *DeleteRequest) GetAuthId() int64 {
+func (m *DeleteRequest) GetAuthId() string {
 	if m != nil {
 		return m.AuthId
 	}
-	return 0
+	return ""
 }
 
 type DeleteResponse struct {
 	Api                  string   `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
-	IsDeleted            bool     `protobuf:"varint,2,opt,name=is_deleted,json=isDeleted,proto3" json:"is_deleted,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -521,7 +514,7 @@ func (m *DeleteResponse) Reset()         { *m = DeleteResponse{} }
 func (m *DeleteResponse) String() string { return proto.CompactTextString(m) }
 func (*DeleteResponse) ProtoMessage()    {}
 func (*DeleteResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_116e343673f7ffaf, []int{8}
+	return fileDescriptor_116e343673f7ffaf, []int{9}
 }
 
 func (m *DeleteResponse) XXX_Unmarshal(b []byte) error {
@@ -549,15 +542,10 @@ func (m *DeleteResponse) GetApi() string {
 	return ""
 }
 
-func (m *DeleteResponse) GetIsDeleted() bool {
-	if m != nil {
-		return m.IsDeleted
-	}
-	return false
-}
-
 type ReadAllRequest struct {
 	Api                  string   `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
+	Limit                int32    `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
+	Page                 int32    `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -567,7 +555,7 @@ func (m *ReadAllRequest) Reset()         { *m = ReadAllRequest{} }
 func (m *ReadAllRequest) String() string { return proto.CompactTextString(m) }
 func (*ReadAllRequest) ProtoMessage()    {}
 func (*ReadAllRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_116e343673f7ffaf, []int{9}
+	return fileDescriptor_116e343673f7ffaf, []int{10}
 }
 
 func (m *ReadAllRequest) XXX_Unmarshal(b []byte) error {
@@ -595,6 +583,20 @@ func (m *ReadAllRequest) GetApi() string {
 	return ""
 }
 
+func (m *ReadAllRequest) GetLimit() int32 {
+	if m != nil {
+		return m.Limit
+	}
+	return 0
+}
+
+func (m *ReadAllRequest) GetPage() int32 {
+	if m != nil {
+		return m.Page
+	}
+	return 0
+}
+
 type ReadAllResponse struct {
 	Api                  string   `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
 	Users                []*User  `protobuf:"bytes,2,rep,name=users,proto3" json:"users,omitempty"`
@@ -607,7 +609,7 @@ func (m *ReadAllResponse) Reset()         { *m = ReadAllResponse{} }
 func (m *ReadAllResponse) String() string { return proto.CompactTextString(m) }
 func (*ReadAllResponse) ProtoMessage()    {}
 func (*ReadAllResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_116e343673f7ffaf, []int{10}
+	return fileDescriptor_116e343673f7ffaf, []int{11}
 }
 
 func (m *ReadAllResponse) XXX_Unmarshal(b []byte) error {
@@ -644,6 +646,7 @@ func (m *ReadAllResponse) GetUsers() []*User {
 
 func init() {
 	proto.RegisterType((*User)(nil), "v1.User")
+	proto.RegisterType((*UserUpdate)(nil), "v1.UserUpdate")
 	proto.RegisterType((*CreateRequest)(nil), "v1.CreateRequest")
 	proto.RegisterType((*CreateResponse)(nil), "v1.CreateResponse")
 	proto.RegisterType((*ReadRequest)(nil), "v1.ReadRequest")
@@ -659,37 +662,41 @@ func init() {
 func init() { proto.RegisterFile("user.proto", fileDescriptor_116e343673f7ffaf) }
 
 var fileDescriptor_116e343673f7ffaf = []byte{
-	// 473 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x53, 0x4d, 0x6f, 0xd3, 0x40,
-	0x10, 0xc5, 0x4e, 0xe2, 0xc4, 0x93, 0x26, 0x2d, 0x0b, 0x12, 0x96, 0xc5, 0x47, 0x64, 0x09, 0x29,
-	0x5c, 0x6c, 0x35, 0x5c, 0x80, 0x03, 0x25, 0x94, 0x03, 0x5c, 0x17, 0xca, 0x35, 0xda, 0xc6, 0xd3,
-	0xb2, 0xc2, 0x89, 0x8d, 0x77, 0x9d, 0x7f, 0xc2, 0xef, 0x05, 0xed, 0x8e, 0xdd, 0xc6, 0x95, 0x0c,
-	0x22, 0xdc, 0x3c, 0x6f, 0xde, 0x9b, 0x8f, 0x37, 0x6b, 0x80, 0x4a, 0x61, 0x19, 0x17, 0x65, 0xae,
-	0x73, 0xe6, 0xee, 0x4e, 0xc3, 0x67, 0xd7, 0x79, 0x7e, 0x9d, 0x61, 0x62, 0x91, 0xcb, 0xea, 0x2a,
-	0xd1, 0x72, 0x83, 0x4a, 0x8b, 0x4d, 0x41, 0xa4, 0xe8, 0xa7, 0x0b, 0xfd, 0x0b, 0x85, 0x25, 0x7b,
-	0x04, 0x43, 0x51, 0xe9, 0x6f, 0x2b, 0x99, 0x06, 0xce, 0xcc, 0x99, 0xf7, 0xb8, 0x67, 0xc2, 0x4f,
-	0x29, 0x7b, 0x08, 0x03, 0xdc, 0x08, 0x99, 0x05, 0xee, 0xcc, 0x99, 0xfb, 0x9c, 0x02, 0x16, 0xc2,
-	0xe8, 0xaa, 0xca, 0xb2, 0xad, 0xd8, 0x60, 0xd0, 0xb3, 0x89, 0x9b, 0xd8, 0xe4, 0xb6, 0x72, 0xfd,
-	0xdd, 0xe6, 0xfa, 0x94, 0x6b, 0x62, 0xf6, 0x1c, 0x26, 0x85, 0x5c, 0xeb, 0xaa, 0xc4, 0xd5, 0x4e,
-	0x64, 0x15, 0x06, 0x03, 0x43, 0xf8, 0x78, 0x8f, 0x1f, 0xd5, 0xf0, 0x57, 0x83, 0xb2, 0xd7, 0x00,
-	0xeb, 0x12, 0x85, 0xc6, 0x74, 0x25, 0x74, 0xe0, 0xcd, 0x9c, 0xf9, 0x78, 0x11, 0xc6, 0xb4, 0x4c,
-	0xdc, 0x2c, 0x13, 0x7f, 0x69, 0x96, 0xe1, 0x7e, 0xcd, 0x5e, 0x6a, 0x23, 0xad, 0x8a, 0xb4, 0x91,
-	0x0e, 0xff, 0x2e, 0xad, 0xd9, 0x4b, 0xfd, 0xde, 0x87, 0x61, 0x3d, 0x45, 0x74, 0x06, 0x93, 0x73,
-	0x5b, 0x92, 0xe3, 0x8f, 0x0a, 0x95, 0x66, 0x27, 0xd0, 0x13, 0x85, 0xb4, 0xde, 0xf8, 0xdc, 0x7c,
-	0xb2, 0xc7, 0xd0, 0x37, 0x6e, 0x5b, 0x5f, 0xc6, 0x8b, 0x51, 0xbc, 0x3b, 0x8d, 0x8d, 0x93, 0xdc,
-	0xa2, 0xd1, 0x3b, 0x98, 0x36, 0x05, 0x54, 0x91, 0x6f, 0x15, 0xfe, 0x73, 0x85, 0x57, 0x30, 0xe6,
-	0x28, 0xd2, 0xee, 0x01, 0xf6, 0x4e, 0xe6, 0xee, 0x9f, 0x2c, 0x7a, 0x0b, 0x47, 0xa4, 0x3c, 0xb0,
-	0xf3, 0x19, 0x4c, 0x2e, 0xac, 0x29, 0xff, 0xb1, 0x7c, 0x53, 0xe0, 0xc0, 0x11, 0xde, 0xc0, 0xe4,
-	0x03, 0x66, 0xf8, 0xa7, 0x11, 0x3a, 0xd7, 0x5f, 0xc2, 0xb4, 0xd1, 0x76, 0x76, 0x7f, 0x02, 0x20,
-	0xd5, 0x2a, 0xb5, 0x34, 0xd2, 0x8f, 0xb8, 0x2f, 0x15, 0xe9, 0xd2, 0x28, 0x82, 0xa9, 0x71, 0x70,
-	0x99, 0x65, 0x9d, 0xfd, 0xa3, 0x73, 0x38, 0xbe, 0xe1, 0x74, 0xf6, 0x79, 0x0a, 0x03, 0xb3, 0x8f,
-	0x0a, 0xdc, 0x59, 0xaf, 0xb5, 0x26, 0xc1, 0x8b, 0x5f, 0x0e, 0x8c, 0x4d, 0xfc, 0x19, 0xcb, 0x9d,
-	0x5c, 0x23, 0x4b, 0xc0, 0xa3, 0x67, 0xc3, 0xee, 0x1b, 0x6a, 0xeb, 0x0d, 0x86, 0x6c, 0x1f, 0xaa,
-	0x5b, 0xbe, 0x80, 0xbe, 0x99, 0x82, 0x1d, 0x9b, 0xdc, 0xde, 0x7b, 0x09, 0x4f, 0x6e, 0x81, 0x9a,
-	0x9a, 0x80, 0x47, 0x57, 0xa1, 0xda, 0xad, 0x13, 0x53, 0xed, 0x3b, 0x47, 0x4b, 0xc0, 0x23, 0x43,
-	0x48, 0xd0, 0x3a, 0x08, 0x09, 0xee, 0xf8, 0xbc, 0x80, 0x61, 0x6d, 0x09, 0x63, 0x4d, 0xfb, 0x5b,
-	0x0f, 0xc3, 0x07, 0x2d, 0x8c, 0x34, 0x97, 0x9e, 0xfd, 0x27, 0x5f, 0xfe, 0x0e, 0x00, 0x00, 0xff,
-	0xff, 0x22, 0x2e, 0xff, 0xc1, 0xbb, 0x04, 0x00, 0x00,
+	// 534 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x53, 0x4d, 0x6f, 0xd3, 0x40,
+	0x10, 0x95, 0x1d, 0xdb, 0x69, 0x27, 0x24, 0x2d, 0x4b, 0x25, 0x2c, 0xab, 0x2a, 0x91, 0x4f, 0xe5,
+	0xe2, 0xa8, 0x41, 0x42, 0x81, 0x03, 0x28, 0x2a, 0x17, 0x24, 0x4e, 0x2e, 0xe5, 0x48, 0xb5, 0x8d,
+	0xa7, 0x61, 0x85, 0x1d, 0x1b, 0x7b, 0x1d, 0x7e, 0x12, 0xbf, 0x12, 0x81, 0xf6, 0x2b, 0xb1, 0x53,
+	0x59, 0x4d, 0x7b, 0xf3, 0x7c, 0xbc, 0x37, 0x33, 0x6f, 0x9f, 0x01, 0xea, 0x0a, 0xcb, 0xa8, 0x28,
+	0x73, 0x9e, 0x13, 0x7b, 0x7d, 0x11, 0xbc, 0x5a, 0xe6, 0xf9, 0x32, 0xc5, 0x89, 0xcc, 0xdc, 0xd6,
+	0x77, 0x13, 0xce, 0x32, 0xac, 0x38, 0xcd, 0x0a, 0xd5, 0x14, 0x9c, 0xed, 0x36, 0xfc, 0x2e, 0x69,
+	0x51, 0x60, 0x59, 0xa9, 0x7a, 0xf8, 0xd7, 0x02, 0xe7, 0xba, 0xc2, 0x92, 0xbc, 0x84, 0x3e, 0xad,
+	0xf9, 0x8f, 0x1b, 0x96, 0xf8, 0xd6, 0xd8, 0x3a, 0x3f, 0x8c, 0x3d, 0x11, 0x7e, 0x4e, 0xc8, 0x09,
+	0xb8, 0x98, 0x51, 0x96, 0xfa, 0xb6, 0x4c, 0xab, 0x80, 0x04, 0x70, 0x70, 0x57, 0xa7, 0xe9, 0x8a,
+	0x66, 0xe8, 0xf7, 0x64, 0x61, 0x13, 0x8b, 0xda, 0x8a, 0x2d, 0x7e, 0xca, 0x9a, 0xa3, 0x6a, 0x26,
+	0x26, 0x3e, 0xf4, 0x0b, 0xb6, 0xe0, 0x75, 0x89, 0xbe, 0x2b, 0x4b, 0x26, 0x24, 0xef, 0x00, 0x16,
+	0x25, 0x52, 0x8e, 0xc9, 0x0d, 0xe5, 0xbe, 0x37, 0xb6, 0xce, 0x07, 0xd3, 0x20, 0x52, 0xeb, 0x47,
+	0x66, 0xfd, 0xe8, 0xab, 0xb9, 0x2f, 0x3e, 0xd4, 0xdd, 0x73, 0x2e, 0xa0, 0x75, 0x91, 0x18, 0x68,
+	0xff, 0x61, 0xa8, 0xee, 0x9e, 0xf3, 0xf0, 0x8f, 0x0d, 0x20, 0xee, 0xbf, 0x96, 0x19, 0x32, 0x35,
+	0xc7, 0x5a, 0x92, 0xe4, 0xf4, 0x1e, 0xc9, 0x15, 0x2f, 0xd9, 0x6a, 0xf9, 0x8d, 0xa6, 0x35, 0x1a,
+	0x29, 0x66, 0x0d, 0x29, 0xec, 0x3d, 0x60, 0x5b, 0xa1, 0x66, 0x0d, 0xa1, 0x7a, 0xfb, 0x20, 0x37,
+	0x32, 0xbe, 0xdd, 0xca, 0xe8, 0xec, 0x01, 0x6c, 0x8a, 0xfc, 0x54, 0xa5, 0x3e, 0xc2, 0xf0, 0x52,
+	0x2a, 0x1e, 0xe3, 0xaf, 0x1a, 0x2b, 0x4e, 0x8e, 0xa1, 0x47, 0x0b, 0xa6, 0xdd, 0x22, 0x3e, 0xc9,
+	0x29, 0x38, 0xc2, 0x9f, 0x5a, 0x85, 0x83, 0x68, 0x7d, 0x11, 0x09, 0x6d, 0x63, 0x99, 0x0d, 0x43,
+	0x18, 0x19, 0x82, 0xaa, 0xc8, 0x57, 0x15, 0xde, 0x67, 0x08, 0x67, 0x30, 0x88, 0x91, 0x26, 0xdd,
+	0x23, 0x1a, 0x36, 0xb5, 0x9b, 0x36, 0x0d, 0x3f, 0xc0, 0x33, 0x85, 0xec, 0xe2, 0x7e, 0x60, 0xbb,
+	0xef, 0x30, 0x54, 0x1e, 0x78, 0xfc, 0x6c, 0x12, 0x6a, 0x66, 0xf5, 0x86, 0x23, 0xc3, 0xac, 0xf9,
+	0x36, 0xd7, 0x1b, 0xfe, 0xce, 0xeb, 0xdf, 0xc3, 0xf0, 0x13, 0xa6, 0xf8, 0x94, 0x1d, 0x04, 0xbf,
+	0xc1, 0x76, 0xf2, 0x7f, 0x81, 0x91, 0xd0, 0x68, 0x9e, 0xa6, 0xdd, 0x03, 0x4e, 0xc0, 0x4d, 0x59,
+	0xc6, 0xb8, 0xa4, 0x77, 0x63, 0x15, 0x10, 0x02, 0x4e, 0x41, 0x97, 0xca, 0xa5, 0x6e, 0x2c, 0xbf,
+	0xc3, 0x4b, 0x38, 0xda, 0xb0, 0x75, 0x8a, 0x7e, 0x06, 0xae, 0x38, 0xbf, 0xf2, 0xed, 0x71, 0xaf,
+	0xa5, 0xba, 0x4a, 0x4f, 0xff, 0x59, 0x30, 0x10, 0xf1, 0x15, 0x96, 0x6b, 0xb6, 0x40, 0x32, 0x01,
+	0x4f, 0x99, 0x84, 0x3c, 0x17, 0xad, 0x2d, 0xc7, 0x05, 0xa4, 0x99, 0xd2, 0x23, 0x5f, 0x83, 0x23,
+	0xb6, 0x20, 0x47, 0xa2, 0xd6, 0xf0, 0x4e, 0x70, 0xbc, 0x4d, 0xe8, 0xd6, 0x09, 0x78, 0xfa, 0x37,
+	0x97, 0xdc, 0xad, 0xe7, 0x56, 0xdc, 0x3b, 0x2f, 0x34, 0x01, 0x4f, 0x69, 0xaa, 0x00, 0xad, 0xb7,
+	0x51, 0x80, 0x1d, 0xc9, 0xa7, 0xd0, 0xd7, 0x92, 0x10, 0x62, 0xc6, 0x6f, 0xd5, 0x0e, 0x5e, 0xb4,
+	0x72, 0x0a, 0x73, 0xeb, 0xc9, 0xdf, 0xee, 0xcd, 0xff, 0x00, 0x00, 0x00, 0xff, 0xff, 0x4b, 0x2c,
+	0x92, 0x55, 0xdb, 0x05, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.

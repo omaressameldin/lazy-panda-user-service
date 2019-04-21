@@ -2,17 +2,25 @@ syntax = "proto3";
 package v1;
 
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
 
 message User {
-    int64 auth_id = 1;
-    string email = 2;
-    string fullname = 3;
-    string nickname = 4;
-    oneof picture {
-      string picture_value = 5;
-    }
-    google.protobuf.Timestamp created_at = 6;
-    google.protobuf.Timestamp updated_at = 7;
+    string auth_id = 1 [json_name="authId"];
+    string email = 2 [json_name="email"];
+    string fullname = 3 [json_name="fullname"];
+    string nickname = 4 [json_name="nickname"];
+    string picture = 5 [json_name="picture"];
+    google.protobuf.Timestamp created_at = 6 [json_name="createdAt"];
+    google.protobuf.Timestamp updated_at = 7 [json_name="updatedAt"];
+}
+
+
+message UserUpdate {
+  google.protobuf.StringValue email = 1 [json_name="email"];
+  google.protobuf.StringValue fullname = 2 [json_name="fullname"];
+  google.protobuf.StringValue nickname = 3 [json_name="nickname"];
+  google.protobuf.StringValue picture = 4 [json_name="picture"];
+  google.protobuf.Timestamp updated_at = 7 [json_name="updatedAt"];
 }
 
 message CreateRequest{
@@ -21,12 +29,11 @@ message CreateRequest{
 }
 message CreateResponse{
     string api = 1;
-    User user = 2;
 }
 
 message ReadRequest{
     string api = 1;
-    int64 auth_id = 2;
+    string auth_id = 2;
 }
 message ReadResponse{
     string api = 1;
@@ -35,24 +42,25 @@ message ReadResponse{
 
 message UpdateRequest{
     string api = 1;
-    User user = 2;
+    string auth_id = 2;
+    UserUpdate user = 3;
 }
 message UpdateResponse{
     string api = 1;
-    User user = 2;
 }
 
 message DeleteRequest{
     string api = 1;
-    int64 auth_id = 2;
+    string auth_id = 2;
 }
 message DeleteResponse{
     string api = 1;
-    bool is_deleted = 2;
 }
 
 message ReadAllRequest{
     string api = 1;
+    int32 limit = 2;
+    int32 page = 3;
 }
 message ReadAllResponse{
     string api = 1;
