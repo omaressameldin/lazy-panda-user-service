@@ -1,27 +1,29 @@
-### Prerequisites
-#### Make sure **if needed** that you:
-* [ ] wrote a clear description of the pr ( see below ⬇️ )
-* [ ] followed our current commits and branching scheme
+
+###### **please follow the guidlines mentioned below and  fill all the sections for a smoother PR 🤗**
+
+##### Make sure **if needed** that you:
+* [ ] wrote a clear description of the pr ( see below :arrow_down: )
+* [ ] followed our current commits and branching scheme ( please check `contributing.md`)
 * [ ] rebased your code on top of master
-* [ ] wrote tests for your intriduced code
+* [ ] wrote tests for your introduced code
 * [ ] updated any existing tests to work with your new code
 * [ ] added flags needed in `cmd` package
 
-For more information, see the `CONTRIBUTING` guide.
 
-### Description
-📰 please write a clear description of what this pr is about
+### Description:
+#### 📰 please write a clear description of what this PR is about
+
+##### :octocat:  Git  Related
+
+##### :fish:  Docker & Docker-compose related
+
+
+##### :fire: Firebase related
+
+##### :nerd_face: user service related
+
 
 ### Steps to test
-☕️ please write all the steps required to test your code
+#### ☕️ please write all the steps required to test your code
 
 ### 🙄 is there anything controversial about your code ?
-
-
-**Expected behavior:** [What you expected to happen]
-
-**Actual behavior:** [What actually happened]
-
-### Versions
-
-You can get this information from executing `npm version`.
