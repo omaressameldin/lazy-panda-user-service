@@ -11,6 +11,7 @@ COPY ./app/go.sum .
 RUN go mod download
 
 COPY ./app .
+RUN CGO_ENABLED=0 GOOS=linux go test ./...
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o ${BUILD_FILE} .
 
 FROM bash:4.3.48
