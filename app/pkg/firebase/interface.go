@@ -21,10 +21,8 @@ type Validator struct {
 
 func generateJsonError(errors ...ValidationError) error {
 	if len(errors) > 0 {
-		jsonError, err := json.Marshal(errors)
-		if err != nil {
-			return err
-		}
+		jsonError, _ := json.Marshal(errors)
+
 		return fmt.Errorf(string(jsonError))
 	}
 	return nil
@@ -53,10 +51,15 @@ func CombineValidationErrors(validators ...Validator) []ValidationError {
 	return combinedErrors
 }
 
-func Create(collection string, key string, data interface{}, validationFn func() []ValidationError) error {
+func addToFirebase(
+	collection string,
+	key string,
+	validationFn func() []ValidationError,
+	addFn func() error,
+) error {
 	errors := validationFn()
 	if len(errors) == 0 {
-		_, err := client.Collection(collection).Doc(key).Set(context.Background(), data)
+		err := addFn()
 		if err != nil {
 			errors = append(errors, ValidationError{Field: "FIREBASE", Message: err.Error()})
 		}
@@ -64,15 +67,38 @@ func Create(collection string, key string, data interface{}, validationFn func()
 	return generateJsonError(errors...)
 }
 
-func Update(collection string, key string, data []firestore.Update, validationFn func() []ValidationError) error {
-	errors := validationFn()
-	if len(errors) == 0 {
-		_, err := client.Collection(collection).Doc(key).Update(context.Background(), data)
-		if err != nil {
-			errors = append(errors, ValidationError{Field: "FIREBASE", Message: err.Error()})
-		}
-	}
-	return generateJsonError(errors...)
+func Create(
+	collection string,
+	key string,
+	data interface{},
+	validationFn func() []ValidationError,
+) error {
+	return addToFirebase(
+		collection,
+		key,
+		validationFn,
+		func() error {
+			_, err := client.Collection(collection).Doc(key).Set(context.Background(), data)
+			return err
+		},
+	)
+}
+
+func Update(
+	collection string,
+	key string,
+	data []firestore.Update,
+	validationFn func() []ValidationError,
+) error {
+	return addToFirebase(
+		collection,
+		key,
+		validationFn,
+		func() error {
+			_, err := client.Collection(collection).Doc(key).Update(context.Background(), data)
+			return err
+		},
+	)
 }
 
 func Read(collection string, key string, model interface{}) error {
@@ -89,14 +115,19 @@ func Read(collection string, key string, model interface{}) error {
 }
 
 func Delete(collection string, key string) error {
-	if _, err := client.Collection(collection).Doc(key).Delete(context.Background()); err != nil {
+	_, err := client.Collection(collection).Doc(key).Delete(context.Background())
+	if err != nil {
 		return generateJsonError(ValidationError{Field: "FIREBASE", Message: err.Error()})
 	}
 
 	return nil
 }
 
-func ReadAll(collection string, genRefFn func() interface{}, appendFn func(interface{})) error {
+func ReadAll(
+	collection string,
+	genRefFn func() interface{},
+	appendFn func(interface{}),
+) error {
 	docs := client.Collection(collection).Documents(context.Background())
 
 	for {
