@@ -17,6 +17,8 @@ type Config struct {
 	Collection     string
 }
 
+var v1API *v1.UserServiceServer
+
 // RunServer get the flags and starts the server
 func RunServer() error {
 	ctx := context.Background()
@@ -41,12 +43,12 @@ func RunServer() error {
 		return fmt.Errorf("File does not exist: '%s'", cfg.FirebaseConfig)
 	}
 
-	v1API := v1.NewUserServiceServer(cfg.FirebaseConfig, cfg.Collection)
+	v1API = v1.NewUserServiceServer(cfg.FirebaseConfig, cfg.Collection)
 
 	return server.RunServer(ctx, v1API, cfg.Port)
 }
 
 // CloseServer closes all connections such as database connection
 func CloseServer() error {
-	return v1.CloseConnection()
+	return v1API.CloseConnection()
 }

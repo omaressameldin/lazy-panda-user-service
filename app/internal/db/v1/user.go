@@ -8,7 +8,7 @@ import (
 	"github.com/badoux/checkmail"
 	"github.com/golang/protobuf/ptypes"
 	v1 "github.com/omaressameldin/lazy-panda-user-service/pkg/api/v1"
-	"github.com/omaressameldin/lazy-panda-user-service/pkg/firebase"
+	"github.com/omaressameldin/lazy-panda-user-service/pkg/database"
 )
 
 func validateName(name string) error {
@@ -18,54 +18,52 @@ func validateName(name string) error {
 	return nil
 }
 
-func validateUser(email, nickname, fullname *string) func() []firebase.ValidationError {
-	return func() []firebase.ValidationError {
-		return firebase.CombineValidationErrors(
-			firebase.CreateValidator(
-				"Email",
-				func() error {
-					if email != nil {
-						return checkmail.ValidateFormat(*email)
-					}
-					return nil
-				},
-			),
-			firebase.CreateValidator(
-				"Nickname",
-				func() error {
-					if nickname != nil {
-						return validateName(*nickname)
-					}
-					return nil
-				},
-			),
-			firebase.CreateValidator(
-				"Fullname",
-				func() error {
-					if fullname != nil {
-						return validateName(*fullname)
-					}
-					return nil
-				},
-			),
-		)
+func validateUser(email, nickname, fullname *string) []database.Validator {
+	return []database.Validator{
+		database.CreateValidator(
+			"Email",
+			func() error {
+				if email != nil {
+					return checkmail.ValidateFormat(*email)
+				}
+				return nil
+			},
+		),
+		database.CreateValidator(
+			"Nickname",
+			func() error {
+				if nickname != nil {
+					return validateName(*nickname)
+				}
+				return nil
+			},
+		),
+		database.CreateValidator(
+			"Fullname",
+			func() error {
+				if fullname != nil {
+					return validateName(*fullname)
+				}
+				return nil
+			},
+		),
 	}
 }
 
-func CreateUser(collection string, key string, user *v1.User) error {
+func CreateUser(connector database.Connector, key string, user *v1.User) error {
 	user.CreatedAt, _ = ptypes.TimestampProto(time.Now())
 	user.UpdatedAt = user.CreatedAt
 
-	return firebase.Create(
-		collection,
+	return connector.Create(
+		validateUser(&user.Email, &user.Nickname, &user.Fullname),
 		key,
 		user,
-		validateUser(&user.Email, &user.Nickname, &user.Fullname))
+	)
 }
 
-func ReadUser(collection string, key string) (*v1.User, error) {
+func ReadUser(connector database.Connector, key string) (*v1.User, error) {
 	var user v1.User
-	if err := firebase.Read(collection, key, &user); err != nil {
+	if err := connector.Read(key, &user); err != nil {
 		return nil, err
 	}
 
@@ -90,7 +88,7 @@ func getUpdated(user *v1.UserUpdate) []firestore.Update {
 	return updated
 }
 
-func UpdateUser(collection string, key string, user *v1.UserUpdate) error {
+func UpdateUser(connector database.Connector, key string, user *v1.UserUpdate) error {
 	var email *string
 	var nickname *string
 	var fullname *string
@@ -104,28 +102,27 @@ func UpdateUser(collection string, key string, user *v1.UserUpdate) error {
 		fullname = &user.Fullname.Value
 	}
 
-	return firebase.Update(
-		collection,
+	return connector.Update(
+		validateUser(email, nickname, fullname),
 		key,
 		getUpdated(user),
-		validateUser(email, nickname, fullname),
 	)
 }
 
-func DeleteUser(collection string, key string) error {
-	if err := firebase.Delete(collection, key); err != nil {
+func DeleteUser(connector database.Connector, key string) error {
+	if err := connector.Delete(key); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func ReadAllUsers(collection string) ([]*v1.User, error) {
+func ReadAllUsers(connector database.Connector) ([]*v1.User, error) {
 	var users []*v1.User
 	apendFn := func(i interface{}) { users = append(users, i.(*v1.User)) }
 	genRefFn := func() interface{} { return &v1.User{} }
 
-	if err := firebase.ReadAll(collection, genRefFn, apendFn); err != nil {
+	if err := connector.ReadAll(genRefFn, apendFn); err != nil {
 		return nil, err
 	}
 
