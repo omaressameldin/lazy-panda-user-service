@@ -6,6 +6,7 @@ import (
 
 	"github.com/omaressameldin/lazy-panda-user-service/internal/db/v1"
 	v1 "github.com/omaressameldin/lazy-panda-user-service/pkg/api/v1"
+	"github.com/omaressameldin/lazy-panda-user-service/pkg/database"
 	"github.com/omaressameldin/lazy-panda-user-service/pkg/firebase"
 
 	"google.golang.org/grpc/codes"
@@ -18,25 +19,26 @@ const (
 
 // UserServiceServer is implementation of v1.userServiceServer proto interface
 type UserServiceServer struct {
-	FirebaseConfig string
-	Collection     string
+	firebaseConfig string
+	connector      database.Connector
 }
 
 // NewUserServiceServer creates User service
-func NewUserServiceServer(firebaseConfig string, collection string) v1.UserServiceServer {
-	if err := firebase.StartConnection(firebaseConfig); err != nil {
+func NewUserServiceServer(firebaseConfig string, collection string) *UserServiceServer {
+	connector, err := firebase.StartConnection(firebaseConfig, collection)
+	if err != nil {
 		panic(err)
 	}
 
 	return &UserServiceServer{
-		FirebaseConfig: firebaseConfig,
-		Collection:     collection,
+		firebaseConfig: firebaseConfig,
+		connector:      connector,
 	}
 }
 
 // CloseConnection closes connection to DB
-func CloseConnection() error {
-	return firebase.CloseConnection()
+func (s *UserServiceServer) CloseConnection() error {
+	return s.connector.CloseConnection()
 }
 
 // checkAPI checks if the API version requested by client is supported by server
@@ -56,7 +58,7 @@ func (s *UserServiceServer) Create(ctx context.Context, req *v1.CreateRequest) (
 		return nil, err
 	}
 
-	if err := db.CreateUser(s.Collection, req.User.AuthId, req.User); err != nil {
+	if err := db.CreateUser(s.connector, req.User.AuthId, req.User); err != nil {
 		return nil, status.Error(codes.Unknown, "failed to insert into User-> "+err.Error())
 	}
 
@@ -71,7 +73,7 @@ func (s *UserServiceServer) Read(ctx context.Context, req *v1.ReadRequest) (*v1.
 		return nil, err
 	}
 
-	user, err := db.ReadUser(s.Collection, req.AuthId)
+	user, err := db.ReadUser(s.connector, req.AuthId)
 	if err != nil {
 		return nil, status.Error(codes.NotFound, fmt.Sprintf("User with ID='%s' is not found", req.AuthId))
 	}
@@ -88,7 +90,7 @@ func (s *UserServiceServer) Update(ctx context.Context, req *v1.UpdateRequest) (
 		return nil, err
 	}
 
-	err := db.UpdateUser(s.Collection, req.AuthId, req.User)
+	err := db.UpdateUser(s.connector, req.AuthId, req.User)
 	if err != nil {
 		return nil, status.Error(codes.Unknown, "failed to update User-> "+err.Error())
 	}
@@ -104,7 +106,7 @@ func (s *UserServiceServer) Delete(ctx context.Context, req *v1.DeleteRequest) (
 		return nil, err
 	}
 
-	if err := db.DeleteUser(s.Collection, req.AuthId); err != nil {
+	if err := db.DeleteUser(s.connector, req.AuthId); err != nil {
 		return nil, status.Error(codes.Unknown, "failed to delete User-> "+err.Error())
 	}
 
@@ -119,7 +121,7 @@ func (s *UserServiceServer) ReadAll(ctx context.Context, req *v1.ReadAllRequest)
 		return nil, err
 	}
 
-	users, err := db.ReadAllUsers(s.Collection)
+	users, err := db.ReadAllUsers(s.connector)
 	if err != nil {
 		return nil, status.Error(codes.Unknown, "failed to get Users-> "+err.Error())
 	}

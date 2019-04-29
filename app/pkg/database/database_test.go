@@ -1,4 +1,4 @@
-package firebase
+package database
 
 import (
 	"encoding/json"
@@ -26,7 +26,7 @@ func TestGenerateJsonError(t *testing.T) {
 	}
 
 	for _, row := range testTable {
-		err := generateJsonError(row.input...)
+		err := GenerateJsonError(row.input...)
 		t.Log(err)
 		if !reflect.DeepEqual(err, row.output) {
 			t.Errorf("incorrect output, got: %v, want: %v.", err, row.output)
