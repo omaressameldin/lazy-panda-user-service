@@ -1,30 +1,12 @@
 package firebase
 
 import (
-	"cloud.google.com/go/firestore"
+	"fmt"
+
 	"github.com/omaressameldin/lazy-panda-user-service/pkg/database"
 	"golang.org/x/net/context"
 	"google.golang.org/api/iterator"
 )
-
-func addToFirebase(
-	collection string,
-	key string,
-	validators []database.Validator,
-	addFn func() error,
-) error {
-	errors := database.CombineValidationErrors(validators...)
-	if len(errors) == 0 {
-		err := addFn()
-		if err != nil {
-			errors = append(
-				errors,
-				database.ValidationError{Field: "FIREBASE", Message: err.Error()},
-			)
-		}
-	}
-	return database.GenerateJsonError(errors...)
-}
 
 func (f *Firebase) Create(
 	validators []database.Validator,
@@ -48,8 +30,9 @@ func (f *Firebase) Create(
 func (f *Firebase) Update(
 	validators []database.Validator,
 	key string,
-	data interface{},
+	data []database.Updated,
 ) error {
+	fmt.Println(generateFirestoreUpdate(data))
 	return addToFirebase(
 		f.Collection,
 		key,
@@ -57,7 +40,7 @@ func (f *Firebase) Update(
 		func() error {
 			_, err := f.client.Collection(f.Collection).Doc(key).Update(
 				context.Background(),
-				data.([]firestore.Update),
+				generateFirestoreUpdate(data),
 			)
 			return err
 		},

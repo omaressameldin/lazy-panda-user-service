@@ -1,8 +1,6 @@
 package firebase
 
 import (
-	"fmt"
-
 	"cloud.google.com/go/firestore"
 	"golang.org/x/net/context"
 
@@ -14,10 +12,6 @@ import (
 type Firebase struct {
 	Collection string
 	client     *firestore.Client
-}
-
-func createError(err error) error {
-	return fmt.Errorf("error connecting to firebase: %v", err)
 }
 
 func StartConnection(jsonConfig string, collection string) (*Firebase, error) {
