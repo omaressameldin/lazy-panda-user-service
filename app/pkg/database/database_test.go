@@ -27,7 +27,6 @@ func TestGenerateJsonError(t *testing.T) {
 
 	for _, row := range testTable {
 		err := GenerateJsonError(row.input...)
-		t.Log(err)
 		if !reflect.DeepEqual(err, row.output) {
 			t.Errorf("incorrect output, got: %v, want: %v.", err, row.output)
 		}
@@ -37,14 +36,13 @@ func TestGenerateJsonError(t *testing.T) {
 func TestCreateValidator(t *testing.T) {
 	field := "test"
 	err := errors.New("error message")
-	fn := func() error { return err }
-	validator := CreateValidator(field, fn)
+	validator := CreateValidator(field, err)
 
 	if validator.Field != field {
 		t.Errorf("incorrect output, got: %v, want: %v.", validator.Field, field)
 	}
-	if validator.Function() != err {
-		t.Errorf("incorrect output, got: %v, want: %v.", validator.Function(), err)
+	if validator.Error != err {
+		t.Errorf("incorrect output, got: %v, want: %v.", validator.Error, err)
 	}
 }
 
@@ -65,11 +63,11 @@ func TestCombineValidationErrors(t *testing.T) {
 
 	for _, ve := range validationErrors {
 		err := ve.err
-		validators = append(validators, Validator{ve.f, func() error { return err }})
+		validators = append(validators, Validator{ve.f, err})
 	}
 	for _, vs := range validationSuccesses {
 		err := vs.err
-		validators = append(validators, Validator{vs.f, func() error { return err }})
+		validators = append(validators, Validator{vs.f, err})
 	}
 	combined := CombineValidationErrors(validators...)
 

@@ -4,48 +4,47 @@ import (
 	"fmt"
 	"time"
 
-	"cloud.google.com/go/firestore"
 	"github.com/badoux/checkmail"
 	"github.com/golang/protobuf/ptypes"
 	v1 "github.com/omaressameldin/lazy-panda-user-service/pkg/api/v1"
 	"github.com/omaressameldin/lazy-panda-user-service/pkg/database"
 )
 
+const MIN_NAME_LENGTH int = 3
+
 func validateName(name string) error {
-	if len(name) <= 3 {
-		return fmt.Errorf("length should be more than 2")
+	if len(name) <= MIN_NAME_LENGTH {
+		return fmt.Errorf("length should be at least %d", MIN_NAME_LENGTH)
 	}
 	return nil
 }
 
 func validateUser(email, nickname, fullname *string) []database.Validator {
+	var emailError error
+	if email != nil {
+		emailError = checkmail.ValidateFormat(*email)
+	}
+	var nicknameError error
+	if nickname != nil {
+		nicknameError = validateName(*nickname)
+	}
+	var fullnameError error
+	if nickname != nil {
+		fullnameError = validateName(*fullname)
+	}
+
 	return []database.Validator{
 		database.CreateValidator(
 			"Email",
-			func() error {
-				if email != nil {
-					return checkmail.ValidateFormat(*email)
-				}
-				return nil
-			},
+			emailError,
 		),
 		database.CreateValidator(
 			"Nickname",
-			func() error {
-				if nickname != nil {
-					return validateName(*nickname)
-				}
-				return nil
-			},
+			nicknameError,
 		),
 		database.CreateValidator(
 			"Fullname",
-			func() error {
-				if fullname != nil {
-					return validateName(*fullname)
-				}
-				return nil
-			},
+			fullnameError,
 		),
 	}
 }
@@ -70,19 +69,19 @@ func ReadUser(connector database.Connector, key string) (*v1.User, error) {
 	return &user, nil
 }
 
-func getUpdated(user *v1.UserUpdate) []firestore.Update {
-	updated := []firestore.Update{}
+func getUpdated(user *v1.UserUpdate) []database.Updated {
+	updated := []database.Updated{}
 	if user.Email != nil {
-		updated = append(updated, firestore.Update{Path: "Email", Value: user.Email.Value})
+		updated = append(updated, database.Updated{Key: "Email", Val: user.Email.Value})
 	}
 	if user.Fullname != nil {
-		updated = append(updated, firestore.Update{Path: "Fullname", Value: user.Fullname.Value})
+		updated = append(updated, database.Updated{Key: "Fullname", Val: user.Fullname.Value})
 	}
 	if user.Nickname != nil {
-		updated = append(updated, firestore.Update{Path: "Nickname", Value: user.Nickname.Value})
+		updated = append(updated, database.Updated{Key: "Nickname", Val: user.Nickname.Value})
 	}
 	if user.Picture != nil {
-		updated = append(updated, firestore.Update{Path: "Picture", Value: user.Picture.Value})
+		updated = append(updated, database.Updated{Key: "Picture", Val: user.Picture.Value})
 	}
 	user.UpdatedAt, _ = ptypes.TimestampProto(time.Now())
 	return updated

@@ -5,22 +5,22 @@ import (
 	"fmt"
 )
 
-func CreateValidator(field string, function func() error) Validator {
+func CreateValidator(field string, err error) Validator {
 	return Validator{
-		Field:    field,
-		Function: function,
+		Field: field,
+		Error: err,
 	}
 }
 
 func CombineValidationErrors(validators ...Validator) []ValidationError {
 	combinedErrors := make([]ValidationError, 0, len(validators))
 	for _, v := range validators {
-		if err := v.Function(); err != nil {
+		if v.Error != nil {
 			combinedErrors = append(
 				combinedErrors,
 				ValidationError{
 					Field:   v.Field,
-					Message: err.Error(),
+					Message: v.Error.Error(),
 				},
 			)
 		}

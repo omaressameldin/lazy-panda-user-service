@@ -24,11 +24,11 @@ RUN mkdir -p ${APP_SRC}
 RUN mkdir -p ${MODS}
 
 RUN addgroup -S appuser && adduser -S appuser -G appuser -u 1000
-RUN chown appuser ${APP_SRC} ${MODS}
-USER appuser
 
 COPY --from=0 /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY ${FIREBASE_CONFIG} .
 COPY --from=0 /usr/src/app/go.mod ${MODS}/
 COPY --from=0 /usr/src/app/go.sum ${MODS}/
+RUN chown -R appuser ${APP_SRC} ${MODS}
+USER appuser
 COPY --from=0 /usr/src/app/${BUILD_FILE} /${BUILD_FILE}
