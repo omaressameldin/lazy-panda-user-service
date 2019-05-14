@@ -1,7 +1,7 @@
 version: '3.2'
 services:
   lazy-panda-proto-gen:
-    build: ./proto-gen/.
+    image: omaressameldin/proto-gen
     environment:
       - BUILD_PATH=${PROTO_BUILD_PATH}
       - OUTPUT_PATH=${PROTO_OUTPUT_PATH}
@@ -10,6 +10,9 @@ services:
       - type: bind
         target: ${PROTO_OUTPUT_PATH}
         source: ./app${PROTO_OUTPUT_PATH}
+      - type: bind
+        target: ${PROTO_BUILD_PATH}
+        source: ./proto-gen${PROTO_BUILD_PATH}
   lazy-panda-user-server:
     build:
       context: .
