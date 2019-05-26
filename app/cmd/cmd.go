@@ -15,6 +15,7 @@ type Config struct {
 	Port           string
 	FirebaseConfig string
 	Collection     string
+	Bucket         string
 }
 
 var v1API *v1.UserServiceServer
@@ -27,7 +28,7 @@ func RunServer() error {
 	flag.StringVar(&cfg.Port, "port", "", "port to bind")
 	flag.StringVar(&cfg.FirebaseConfig, "firebaseConfig", "", "firebase json config file")
 	flag.StringVar(&cfg.Collection, "collection", "", "firebase collection")
-
+	flag.StringVar(&cfg.Bucket, "bucket", "", "firebase storage bucket")
 	flag.Parse()
 
 	if len(cfg.Port) == 0 {
@@ -38,12 +39,16 @@ func RunServer() error {
 		return fmt.Errorf("invalid Collection for firebase database: '%s'", cfg.Collection)
 	}
 
+	if len(cfg.Bucket) == 0 {
+		return fmt.Errorf("invalid Collection for firebase database: '%s'", cfg.Collection)
+	}
+
 	_, err := os.Stat(cfg.FirebaseConfig)
 	if os.IsNotExist(err) {
 		return fmt.Errorf("File does not exist: '%s'", cfg.FirebaseConfig)
 	}
 
-	v1API = v1.NewUserServiceServer(cfg.FirebaseConfig, cfg.Collection)
+	v1API = v1.NewUserServiceServer(cfg.FirebaseConfig, cfg.Collection, cfg.Bucket)
 
 	return server.RunServer(ctx, v1API, cfg.Port)
 }
