@@ -8,7 +8,7 @@ import (
 	"github.com/golang/protobuf/ptypes/wrappers"
 	v1 "github.com/omaressameldin/lazy-panda-user-service/pkg/api/v1"
 	"github.com/stretchr/testify/mock"
-	"github.com/omaressameldin/lazy-panda-user-service/pkg/database"
+	"github.com/omaressameldin/lazy-panda-utils/app/pkg/database"
 )
 
 func TestValidateName(t *testing.T) {

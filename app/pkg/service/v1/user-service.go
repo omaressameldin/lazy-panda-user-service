@@ -6,8 +6,8 @@ import (
 
 	"github.com/omaressameldin/lazy-panda-user-service/internal/db/v1"
 	v1 "github.com/omaressameldin/lazy-panda-user-service/pkg/api/v1"
-	"github.com/omaressameldin/lazy-panda-user-service/pkg/database"
-	"github.com/omaressameldin/lazy-panda-user-service/pkg/firebase"
+	"github.com/omaressameldin/lazy-panda-utils/app/pkg/database"
+	"github.com/omaressameldin/lazy-panda-utils/app/pkg/firebase"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
