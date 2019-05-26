@@ -24,8 +24,12 @@ type UserServiceServer struct {
 }
 
 // NewUserServiceServer creates User service
-func NewUserServiceServer(firebaseConfig string, collection string) *UserServiceServer {
-	connector, err := firebase.StartConnection(firebaseConfig, collection)
+func NewUserServiceServer(
+	firebaseConfig string,
+	collection string,
+	bucket string,
+) *UserServiceServer {
+	connector, err := firebase.StartConnection(firebaseConfig, collection, bucket)
 	if err != nil {
 		panic(err)
 	}
