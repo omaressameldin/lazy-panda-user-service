@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/ptypes/wrappers"
-	v1 "github.com/omaressameldin/lazy-panda-user-service/pkg/api/v1"
+	v1 "github.com/omaressameldin/lazy-panda-user-service/app/pkg/api/v1"
 	"github.com/stretchr/testify/mock"
 	"github.com/omaressameldin/lazy-panda-utils/app/pkg/database"
 )

@@ -1,4 +1,4 @@
-module github.com/omaressameldin/lazy-panda-user-service
+module github.com/omaressameldin/lazy-panda-user-service/app
 
 require (
 	cloud.google.com/go v0.39.0

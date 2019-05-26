@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/omaressameldin/lazy-panda-user-service/cmd"
+	"github.com/omaressameldin/lazy-panda-user-service/app/cmd"
 )
 
 func exitWithError(err error) {

@@ -4,10 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/omaressameldin/lazy-panda-user-service/internal/db/v1"
-	v1 "github.com/omaressameldin/lazy-panda-user-service/pkg/api/v1"
+	"github.com/omaressameldin/lazy-panda-user-service/app/internal/db/v1"
+	v1 "github.com/omaressameldin/lazy-panda-user-service/app/pkg/api/v1"
 	"github.com/omaressameldin/lazy-panda-utils/app/pkg/database"
-	"github.com/omaressameldin/lazy-panda-utils/app/pkg/firebase"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -19,24 +18,13 @@ const (
 
 // UserServiceServer is implementation of v1.userServiceServer proto interface
 type UserServiceServer struct {
-	firebaseConfig string
-	connector      database.Connector
+	connector database.Connector
 }
 
 // NewUserServiceServer creates User service
-func NewUserServiceServer(
-	firebaseConfig string,
-	collection string,
-	bucket string,
-) *UserServiceServer {
-	connector, err := firebase.StartConnection(firebaseConfig, collection, bucket)
-	if err != nil {
-		panic(err)
-	}
-
+func NewUserServiceServer(connector database.Connector) *UserServiceServer {
 	return &UserServiceServer{
-		firebaseConfig: firebaseConfig,
-		connector:      connector,
+		connector: connector,
 	}
 }
 

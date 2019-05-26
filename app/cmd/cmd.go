@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"os"
 
-	v1 "github.com/omaressameldin/lazy-panda-user-service/pkg/service/v1"
-	"github.com/omaressameldin/lazy-panda-user-service/server"
+	v1 "github.com/omaressameldin/lazy-panda-user-service/app/pkg/service/v1"
+	"github.com/omaressameldin/lazy-panda-user-service/app/server"
+	"github.com/omaressameldin/lazy-panda-utils/app/pkg/database"
+	"github.com/omaressameldin/lazy-panda-utils/app/pkg/firebase"
 )
 
 // Config is configuration for Server
@@ -47,10 +49,20 @@ func RunServer() error {
 	if os.IsNotExist(err) {
 		return fmt.Errorf("File does not exist: '%s'", cfg.FirebaseConfig)
 	}
-
-	v1API = v1.NewUserServiceServer(cfg.FirebaseConfig, cfg.Collection, cfg.Bucket)
+	connector := initConnector(cfg.FirebaseConfig, cfg.Collection, cfg.Bucket)
+	v1API = v1.NewUserServiceServer(connector)
 
 	return server.RunServer(ctx, v1API, cfg.Port)
+}
+
+// initConnector initializes database connector
+func initConnector(firebaseConfig, collection, bucket string) database.Connector {
+	connector, err := firebase.StartConnection(firebaseConfig, collection, bucket)
+	if err != nil {
+		panic(err)
+	}
+
+	return connector
 }
 
 // CloseServer closes all connections such as database connection
