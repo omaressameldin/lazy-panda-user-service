@@ -61,7 +61,9 @@ github.com/mwitkow/go-conntrack v0.0.0-20161129095857-cc309e4a2223/go.mod h1:qRW
 github.com/omaressameldin/grpc-graphql-demo v0.0.0-20190326134224-c1de75c71221 h1:qHUgyQWrr7nyF6iONFm60d87iEHGp2Xh3oZArmM3zIQ=
 github.com/omaressameldin/grpc-graphql-demo/todos-server v0.0.0-20190326134224-c1de75c71221 h1:5LeZrFGCe3pqrQBB+btKbKVNwrz6uNMXEpml7G8OAs4=
 github.com/omaressameldin/grpc-graphql-demo/todos-server v0.0.0-20190326134224-c1de75c71221/go.mod h1:4kwQS+V3vR7QRFJv0Ctxvvt7dhkHrjW5nss2m9UukWA=
+github.com/omaressameldin/lazy-panda-user-service v0.0.0-20190526191129-ed63fcef211c h1:dwkQqaCFya4nQ9uPmNwlrSyDgZ9DbyyyahTDRfq3f8k=
 github.com/omaressameldin/lazy-panda-utils v0.0.0-20190526002045-b81327c7d9f7 h1:rU0FkLtvPvUbg3XguN3ooZ7NKsFUknZAoWcfnaTS7bI=
+github.com/omaressameldin/lazy-panda-utils v0.0.0-20190526184506-6249a6f1acc2 h1:mJ0nvVOY6OymjjfRlKTFF47VZLKJuM4cJrOZWxq/zwo=
 github.com/omaressameldin/lazy-panda-utils/app v0.0.0-20190526184506-6249a6f1acc2 h1:S9Y9OOilaTJCTbRgThIHAmcUhc4uX6Bm2ReHkHQRMAs=
 github.com/omaressameldin/lazy-panda-utils/app v0.0.0-20190526184506-6249a6f1acc2/go.mod h1:f7vKF/HbCgmVvTwMje+V7YDUrFvqLOYMaFFI0Wmf/1E=
 github.com/onsi/ginkgo v1.6.0/go.mod h1:lLunBs/Ym6LB5Z9jYTR76FiuTmxDTDusOGeTQH+WWjE=
