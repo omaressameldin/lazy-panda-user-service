@@ -21,7 +21,7 @@ services:
         - APP_SRC=${APP_SRC}
         - MODS=${MODS}
         - BUILD_FILE=${BUILD_FILE}
-    command: sh -c "cp -r ${MODS}/. ${APP_SRC} && /${BUILD_FILE} --port=${PORT} --firebaseConfig=${FIREBASE_CONFIG} --collection=${COLLECTION} --bucket=${BUCKET}"
+    command: sh -c "cp -r ${MODS}/. ${APP_SRC} && /${BUILD_FILE} --port=${PORT} --firebaseConfig=${FIREBASE_CONFIG} --collection=${COLLECTION}"
     volumes:
       - type: bind
         target: ${APP_SRC}
