@@ -23,6 +23,7 @@ Lazy Panda is a project aimed on managing employee time for consulting companies
 - To connect to service:
 ```golang
 import (
+	"log"
 	v1 "github.com/omaressameldin/lazy-panda-user-service/pkg/api/v1"
 	"google.golang.org/grpc"
 )
